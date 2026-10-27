@@ -35,15 +35,24 @@ export const Autocomplete: React.FC<Props> = ({
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
+    const trimmedQuery = newQuery.trim();
 
     setQuery(newQuery);
-    applyQuery(newQuery.trim());
     setIsOpen(true);
 
     if (selectedPerson) {
       setSelectedPerson(null);
       onSelected(null);
     }
+
+    if (!trimmedQuery) {
+      applyQuery.cancel();
+      setAppliedQuery('');
+
+      return;
+    }
+
+    applyQuery(trimmedQuery);
   };
 
   const handlePersonSelect = (person: Person) => {
@@ -103,7 +112,7 @@ export const Autocomplete: React.FC<Props> = ({
         </div>
       </div>
 
-      {filteredPeople.length === 0 && (
+      {appliedQuery.trim().length > 0 && filteredPeople.length === 0 && (
         <div
           className="
             notification
